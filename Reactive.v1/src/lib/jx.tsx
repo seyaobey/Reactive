@@ -37,7 +37,9 @@ export module Types {
 
     export interface RouteInfo {
         url: string,
-        params?: string
+        params?: string,
+        title?: string,
+        path?: string[]
     }
 
 

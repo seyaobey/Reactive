@@ -17,7 +17,9 @@ export interface BasePanelProps extends core.base.BaseProps {
     toolbox?: boolean,
     onfooter?: (panel: BasePanel, $footer) => {
 
-    }
+    },
+    style?: any,
+    className?: any
 }
 export class BasePanel extends core.base.BaseView {
     
@@ -29,12 +31,14 @@ export class BasePanel extends core.base.BaseView {
 
     render() {
 
+        var props = _.extend({}, this.props);
+
         var toolbox = !this.props.toolbox ? 'hidden' : null;
 
         var html =
-            <div className="ibox">
+            <div className="ibox" {...props}>
 
-                <div className="ibox-title">
+                <div className="ibox-title hidden">
 
                   <h5 className="title" >{this.props.title}</h5>
 

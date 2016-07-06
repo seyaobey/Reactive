@@ -23,7 +23,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TypeScriptToolsVersion>1.6</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -179,6 +179,7 @@
     <Content Include="css\plugins\toastr\toastr.min.css" />
     <Content Include="css\plugins\touchspin\jquery.bootstrap-touchspin.min.css" />
     <Content Include="css\style.css" />
+    <Content Include="css\waitMe.css" />
     <Content Include="email_templates\action.html" />
     <Content Include="email_templates\alert.html" />
     <Content Include="email_templates\billing.html" />
@@ -1545,6 +1546,7 @@
     <Content Include="js\react.js" />
     <Content Include="js\redux.js" />
     <Content Include="js\require.js" />
+    <Content Include="js\waitMe.js" />
     <Content Include="minor.html" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1563,7 +1565,11 @@
     <TypeScriptCompile Include="src\lib\core.tsx" />
     <TypeScriptCompile Include="src\lib\jx.tsx" />
     <TypeScriptCompile Include="src\lib\utils.ts" />
+    <TypeScriptCompile Include="src\views\company\account.tsx" />
+    <TypeScriptCompile Include="src\views\company\edit_division.tsx" />
+    <TypeScriptCompile Include="src\views\company\organization.tsx" />
     <TypeScriptCompile Include="src\views\home\home.tsx" />
+    <TypeScriptCompile Include="src\views\home\login.tsx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

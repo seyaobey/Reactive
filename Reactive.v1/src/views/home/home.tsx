@@ -52,16 +52,46 @@ export class HomeView extends core.base.BaseView {
 
     default_content() {
 
-        return <div className="col-lg-12 animated fadeInRight">
-                    <div className="text-center m-t-lg">
-                        <h1>
-                            Welcome in StampHR
-                        </h1>
-                        <small>
-                            It is an application skeleton for a typical web app.You can use it to quickly bootstrap your webapp projects and dev environment for these projects.
-                        </small>
-                    </div>
-               </div>
+        if (this.app.router.params === 'login' || !Backendless.UserService.getCurrentUser()) {
+
+            return null;
+            
+        } else {
+            
+            return <div className="col-lg-12 animated fadeInRight">
+                <div className="text-center m-t-lg">
+                    <h1>
+                        Welcome in StampHR
+                    </h1>
+                    <small>
+                        It is an application skeleton for a typical web app.You can use it to quickly bootstrap your webapp projects and dev environment for these projects.
+                    </small>
+                </div>
+            </div>
+
+        }
+        
+    }
+
+
+    enter_login() {
+
+        $('body').addClass('gray-bg');
+
+        $('.login-view').show();
+
+        $('#wrapper').hide();
+        
+    }
+
+
+    exit_login() {
+
+        $('body').removeClass('gray-bg');
+
+        $('#wrapper').show();
+
+        $('.login-view').hide();
 
     }
 
@@ -81,13 +111,26 @@ export class HomeView extends core.base.BaseView {
             default:
                 return this.default_content();
         }
-
     }
+
 
 
     componentDidMount() {
 
         super.componentDidMount();
+
+
+        if (this.app.router.params === 'login' || !Backendless.UserService.getCurrentUser()) {
+
+            this.enter_login();
+
+            ReactDOM.render(<Login />, $('.login-view')[0]);
+
+        } else {
+
+            this.exit_login();
+        }
+        
 
         this.highlight_active_menu();
     }
@@ -173,5 +216,69 @@ class Panels extends core.base.BaseView {
 
     }
 
+}
+
+
+
+class Login extends core.base.BaseView {
+
+    render() {
+
+        var html = 
+            <div className="middle-box text-center loginscreen animated fadeInDown">
+                <div>
+                    <div className="text-center">
+                        <h1 className="logo-name">HR+</h1>
+                    </div>
+                    <h3>Welcome to Stamp HR</h3>
+                    <p>Perfectly designed and precisely prepared admin theme with over 50 pages with extra new web app views.
+                        {/*Continually expanded and constantly improved Inspinia Admin Them (IN+)*/}
+                    </p>
+                    <p>Login in.To see it in action.</p>
+                    <form action="index.html" role="form" className="m-t">
+                        <div className="form-group">
+                            <input type="email" required placeholder="Username" className="form-control" />
+                        </div>
+                        <div className="form-group">
+                            <input type="password" required placeholder="Password" className="form-control" />
+                        </div>
+                        <button className="btn btn-primary block full-width m-b btn-login" type="button">Login</button>
+                        <a href="#"><small>Forgot password?</small></a>
+                        <p className="text-muted text-center"><small>Do not have an account?</small></p>
+                        <a href="register.html" className="btn btn-sm btn-white btn-block">Create an account</a>
+                    </form>
+                    <p className="m-t"> <small>Inspinia we app framework base on Bootstrap 3 © 2014</small> </p>
+                </div>
+            </div>
+
+        return html
+
+
+    }
+
+
+
+    componentDidMount() {
+
+        $('.btn-login').off('click');
+        $('.btn-login').click(() => {
+
+            utils.spin(this.root);
+
+            var email = $(this.root).find('[type="email"]').val();
+            var password = $(this.root).find('[type="password"]').val();
+
+            Backendless.UserService.login(email, password, true, new Backendless.Async(res => {
+                utils.unspin(this.root);
+                toastr.success('Login was successfull');
+                this.app.router.navigate('/');
+            }, err => {
+                utils.unspin(this.root);
+                toastr.error(err['message']);
+            }));
+
+        });
+
+    }
 }
 

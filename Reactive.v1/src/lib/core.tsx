@@ -31,7 +31,9 @@ export module types {
 
     export interface RouteInfo {
         url: string,
-        descr?: string
+        params?: string,
+        title?: string,
+        path?: string[]
     }
 
 
@@ -136,7 +138,7 @@ export module application {
 
         params: any;
         routes: any;
-
+        current_route: types.RouteInfo
 
 
         init_routes(routes: any) {
@@ -156,7 +158,7 @@ export module application {
                         return r === key;
                     });
 
-                    var route = null;
+                    var route:any = null;
 
                     if (url) {
                         route = this.routes[url];
@@ -165,6 +167,8 @@ export module application {
                     if (!route) {
                         // --> 404
                     }
+
+                    this.current_route = route;
 
                     var path = '..' + utils.Path.join('/views', route.url);
                     var __params = key;
