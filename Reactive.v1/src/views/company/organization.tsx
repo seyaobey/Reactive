@@ -70,6 +70,7 @@ export class OrganizationView extends core.base.BaseView {
 
     componentDidUpdate() {
 
+
         if (this.state.loading) {
 
             utils.spin(this.root);

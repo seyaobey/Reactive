@@ -281,7 +281,8 @@ class CompDiv {
 
 
 interface DepartmentsListState extends core.base.BaseState {
-    action: actions
+    action: actions,
+    edit_deptid?: string
 }
 
 export interface DepartmentsListProps extends core.base.BaseProps{
@@ -289,7 +290,7 @@ export interface DepartmentsListProps extends core.base.BaseProps{
     depts:any[]
 }
 
-enum actions { NONE, ADD_NEW_DEPARTMENT, RELOAD_DATA }
+enum actions { NONE, ADD_NEW_DEPARTMENT, EDIT_DEPARTMENT, RELOAD_DATA }
 
 export class DepartmentsList extends core.base.BaseView {
 
@@ -308,10 +309,23 @@ export class DepartmentsList extends core.base.BaseView {
         if (!this.props.divid) {
             return;
         }
+        
+        
+        var btn_add_classes = 'btn-primary';
+        if (this.state.action === actions.ADD_NEW_DEPARTMENT || this.state.action === actions.EDIT_DEPARTMENT) {
+            btn_add_classes = 'btn-default';
+        }
 
-        var btn_add_classes = this.state.action === actions.ADD_NEW_DEPARTMENT ? 'btn-default' : 'btn-primary';
-        var btn_save_classes = this.state.action === actions.ADD_NEW_DEPARTMENT ? 'btn-success btn-outline' : 'btn-default btn-outline';
-        var btn_cancel_classes = this.state.action === actions.ADD_NEW_DEPARTMENT ? 'btn-warning btn-outline' : 'btn-default btn-outline';
+        var btn_save_classes = 'btn-default btn-outline';
+        if (this.state.action === actions.ADD_NEW_DEPARTMENT || this.state.action === actions.EDIT_DEPARTMENT) {
+            btn_save_classes = 'btn-success btn-outline';
+        }
+
+        var btn_cancel_classes = 'btn-default btn-outline';
+        if (this.state.action === actions.ADD_NEW_DEPARTMENT || this.state.action === actions.EDIT_DEPARTMENT) {
+            btn_cancel_classes = 'btn-warning btn-outline';
+        }
+        
 
         var html = 
             <div className="department">
@@ -328,11 +342,35 @@ export class DepartmentsList extends core.base.BaseView {
 
                     <hr />
 
-                    {this.fill_with_data() }
+                    {this.resolve_content() }
 
                 </div>
 
         return html;
+    }
+
+
+    resolve_content() {
+
+        switch (this.state.action) {
+
+            case actions.ADD_NEW_DEPARTMENT: {
+
+                return <EditDepartment deptid={null} />
+
+            } 
+
+            case actions.EDIT_DEPARTMENT: {
+                
+                return <EditDepartment deptid={this.state.edit_deptid} />
+            }
+
+
+            case actions.RELOAD_DATA:
+            default:
+                return this.fill_with_data();
+        }
+
     }
 
 
@@ -358,6 +396,18 @@ export class DepartmentsList extends core.base.BaseView {
     }
 
 
+    edit_department(e: Event) {
+
+        var deptid = $(e.currentTarget).closest('[data-rowid]').attr('data-rowid');
+
+        this.setState(_.extend({}, this.state, {
+            action: actions.EDIT_DEPARTMENT,
+            edit_deptid: deptid
+        }));
+
+    }
+
+
     fill_with_data() {
 
         
@@ -378,8 +428,9 @@ export class DepartmentsList extends core.base.BaseView {
                         {
                         _.map(this.props.depts, dep => {
 
-                                var tr =
-                                    <tr>
+                        var tr =
+                                    <tr key={dep['objectId']() } data-rowid={"{0}".format(dep['objectId']()) }>
+
                                         <td>{count++}</td>
 
                                         <td>{dep['compdept_title']()}</td>
@@ -387,7 +438,7 @@ export class DepartmentsList extends core.base.BaseView {
                                         <td>{dep['compdept_descr']()}</td>
 
                                         <td>
-                                            <button className="btn btn-info btn-outline btn-sm">edit</button>
+                                            <button onClick={this.edit_department.bind(this)} className="btn btn-info btn-outline btn-sm">edit</button>
                                         </td>
 
                                     </tr>
@@ -401,35 +452,7 @@ export class DepartmentsList extends core.base.BaseView {
         
         return table;
     }
-
-
-    //componentDidUpdate() {
-
-    //    switch (this.state.action) {
-
-    //        case actions.ADD_NEW_DEPARTMENT: {
-
-
-    //        } break;
-
-    //        case actions.RELOAD_DATA:
-    //        default: {
-
-    //            if (this.state.loading) {
-
-    //                this.setState(_.extend({}, this.state, {
-    //                    loading: false,
-    //                    action: actions.NONE
-    //                }));
-
-
-    //            }
-
-    //        } break;
-    //    }
-        
-    //}
-
+    
 
     load_data() {
 
@@ -454,6 +477,113 @@ export class DepartmentsList extends core.base.BaseView {
 
             this.deps = res.data[0];
                         
+            d.resolve(true);
+
+        }));
+
+        return d.promise;
+
+    }
+}
+
+
+
+interface EditDepartmentProps extends core.base.BaseProps {
+    deptid:any
+}
+interface EditDepartmentState extends core.base.BaseState {
+}
+class EditDepartment extends core.base.BaseView {
+    
+    props: EditDepartmentProps;
+    state: EditDepartmentState;
+    item: any;
+
+    constructor(props: EditDepartmentProps) {
+        super(props);
+        this.state.loading = true;
+    }
+
+    render() {
+
+        var html =
+            <div className="row animated fadeInUp" style={{ paddingLeft: 20, paddingRight: 20, marginTop:30 }}>
+
+                <h2><i className="fa fa-edit" ></i> Edit department</h2>
+
+                <br />
+
+                <b.FormGroup controlId="formControlsText">
+                            <h3>Title</h3>
+                            <b.FormControl type="text" className="edit-mode" style={{ height: 50, fontSize: 20 }}
+                                data-bind="textInput:compdept_title" placeholder="Enter a title" />                            
+                            </b.FormGroup>
+
+                     <br />
+
+                     <b.FormGroup controlId="formControlsText">
+                            <h3>Description</h3>
+                            <textarea rows={3} id="compdept_descr" style={{ fontSize: 20 }}
+                                data-bind="textInput:compdept_descr" className="custom-scroll form-control edit-mode" />                            
+                     </b.FormGroup>
+            </div>
+
+        return html;
+    }
+
+
+    componentDidMount() {
+
+        super.componentDidMount();
+
+        this.forceUpdate();
+    }
+
+
+    componentDidUpdate() {
+
+        if (this.state.loading) {
+
+            if (!this.props.deptid) {
+                // this is new
+                // -> go to binding
+            } else {
+
+                this.load_dept().then(() => {
+
+                    this.setState(_.extend({}, this.state, {
+                        loading: false
+                    }));
+                });
+            }
+
+        } else {
+
+            ko.cleanNode(this.root[0]);
+
+            ko.applyBindings(this.item, this.root[0]);
+            
+        }
+
+    }
+
+
+    load_dept() {
+
+        var d = Q.defer();
+
+        var model = Backendless.Persistence.of('compdept');
+
+        var qry = new Backendless.DataQuery();
+
+        qry.condition = "objectId = '{0}'".format(this.props.deptid);
+        
+        var d = Q.defer();
+        
+        model.find(qry, new Backendless.Async((res: any) => {
+
+            this.item = ko['mapping'].fromJS(res.data[0]);
+
             d.resolve(true);
 
         }));
