@@ -263,17 +263,17 @@ class Login extends core.base.BaseView {
         $('.btn-login').off('click');
         $('.btn-login').click(() => {
 
-            utils.spin(this.root);
+            utils.spin($('body'));
 
             var email = $(this.root).find('[type="email"]').val();
             var password = $(this.root).find('[type="password"]').val();
 
             Backendless.UserService.login(email, password, true, new Backendless.Async(res => {
-                utils.unspin(this.root);
+                utils.unspin($('body'));
                 toastr.success('Login was successfull');
                 this.app.router.navigate('/');
             }, err => {
-                utils.unspin(this.root);
+                utils.unspin($('body'));
                 toastr.error(err['message']);
             }));
 

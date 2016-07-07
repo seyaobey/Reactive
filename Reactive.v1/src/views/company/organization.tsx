@@ -16,6 +16,7 @@ import { EditDivision, EditDivisionProps} from './edit_division';
 
 
 interface OrganizationViewState extends core.base.BaseState {
+    selected_divid: string
 }
 export interface OrganizationViewProps extends core.base.BaseProps {    
 }
@@ -24,10 +25,12 @@ export class OrganizationView extends core.base.BaseView {
     props: OrganizationViewProps;
     state: OrganizationViewState;
     divs_data: any[];
+    first_load: boolean;
 
     constructor(props: OrganizationViewProps) {
         super(props);
         this.state.loading = true;
+        this.first_load = true;
     }
 
     render() {
@@ -69,12 +72,14 @@ export class OrganizationView extends core.base.BaseView {
         if (this.state.loading) {
 
             utils.spin(this.root);
-
+            
             this.load_divs_data().then(() => {
 
                 this.setState(_.extend({}, this.state, {
                     loading: false
                 }));
+
+                this.state.selected_divid = null;
 
             }).finally(() => {
 
@@ -82,8 +87,8 @@ export class OrganizationView extends core.base.BaseView {
             });
         }
 
-        if (!this.state.loading) {
-
+        if (!this.state.loading)
+        {
             this.jget('.btn-edit').click((e) => {
 
                 var id = $(e.currentTarget).closest('[data-rowid]').attr('data-rowid');
@@ -92,8 +97,19 @@ export class OrganizationView extends core.base.BaseView {
 
             });
 
-        }
+            if (this.divs_data && this.divs_data.length > 0) {
 
+                if (this.first_load) {
+
+                    this.first_load = false;
+
+                    this.jget('.btn-edit').first().click();
+
+                }
+            }
+
+        }
+        
     }
 
 
@@ -104,8 +120,8 @@ export class OrganizationView extends core.base.BaseView {
 
         var qry = new Backendless.DataQuery();
 
-        //qry.condition = "usrid = '{0}'".format(Backendless.UserService.getCurrentUser()['objectId']);
-        //qry.options = { relations: ["depts"] };
+        qry.condition = "usrid = '{0}'".format(Backendless.UserService.getCurrentUser()['objectId']);
+        qry.options = { relations: ["depts"] };
 
         var d = Q.defer();
 
@@ -159,10 +175,18 @@ export class OrganizationView extends core.base.BaseView {
     }
 
 
+    cancel_edit(id: any) {
+
+        ReactDOM.unmountComponentAtNode(this.jget('.division-placeholder')[0]);
+
+    }
+
+
+
     get_divs_list() {
 
-        var count = 5;
-
+        var selectid = this.state.selected_divid;
+        
         var html =
             <div>
                 
@@ -177,7 +201,7 @@ export class OrganizationView extends core.base.BaseView {
 
                 <div>
 
-                    <DivisionList ref='divs_listview' data={this.divs_data} owner={this} />
+                    <DivisionList ref='divs_listview' data={this.divs_data} select_id={selectid} owner={this} />
 
                 </div>
 
@@ -187,17 +211,38 @@ export class OrganizationView extends core.base.BaseView {
         return html;
 
     }
+
+
+    notify(cmd: string, data?: any): Q.Promise<any> {
+
+        switch (cmd) {
+
+            case "update-list":
+
+                this.setState(_.extend({}, this.state, {
+                    selected_divid: data,
+                    loading : true
+                }));
+
+                return Q.resolve(true);
+
+            default:
+                return super.notify(cmd, data);
+        }
+        
+    }
 }
 
 
 
 
 interface DivisionListProps extends core.base.BaseProps {
-    data: any[]
+    data: any[],
+    select_id?: string
 }
 
 interface DivisionListState extends core.base.BaseState {
-    selected_id: string;
+    
 }
 
 class DivisionList extends core.base.BaseView{
@@ -231,6 +276,12 @@ class DivisionList extends core.base.BaseView{
         }
 
         var type: string = 'info-element';
+
+        if (this.props.select_id === div['objectId']) {
+
+            type = 'danger-element highlight';
+
+        }
         
         
         var html =
@@ -267,13 +318,12 @@ class DivisionList extends core.base.BaseView{
 
             var id = $(e.currentTarget).closest('[data-rowid]').attr('data-rowid');
 
-            this.jget('.danger-element').removeClass('danger-element').addClass('info-element');
+            this.jget('.danger-element').removeClass('danger-element highlight').addClass('info-element');
 
-            this.jget('[data-rowid="{0}"]'.format(id)).removeClass('info-element').addClass('danger-element');
+            this.jget('[data-rowid="{0}"]'.format(id)).removeClass('info-element').addClass('danger-element highlight');
 
             this.props.owner['edit_division'](id);
-
-
+            
         });
 
     }

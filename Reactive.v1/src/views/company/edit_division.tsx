@@ -31,7 +31,7 @@ export class EditDivision extends core.base.BaseView {
 
                     <h3 style={{ display: 'inline-block' }}>Edit division</h3>
 
-                    <a href="#" className="btn btn-warning pull-right" style={{ marginLeft: 10 }}><i className="fa fa-times"></i> cancel</a>
+                    <a href="#" className="btn btn-warning pull-right" onClick={this.cancel.bind(this) } style={{ marginLeft: 10 }}><i className="fa fa-times"></i> cancel</a>
                     <a href="#" className="btn btn-success pull-right btn-save btn-save" onClick={this.save.bind(this)}><i className="fa fa-check"></i> save</a>
                 </div>
 
@@ -125,6 +125,8 @@ export class EditDivision extends core.base.BaseView {
 
             this.load_data().then(() => {
 
+                this.state.loading = false;
+                
                 ko.cleanNode(this.root[0]);
 
                 ko.applyBindings(this.item, this.root[0]);
@@ -175,12 +177,43 @@ export class EditDivision extends core.base.BaseView {
 
         if (!this.props.divid) {
 
-            return this.add_div();
+            utils.spin(this.root);
+
+            return this.add_div()
+                .then(() => {
+                    //this.props.owner.notify('update-list');
+                    return true;
+                })
+                .finally(() => { utils.unspin(this.root); });
 
         } else {
 
-            return this.save_div();
+            utils.spin(this.root);
+
+            return this.save_div()
+                .then(() => {
+                    //this.props.owner.notify('update-list');
+                    return true;
+                })
+                .finally(() => { utils.unspin(this.root); });
         }
+    }
+
+
+    cancel() {
+
+        if (this.props.divid) {
+
+            this.setState(_.extend({}, this.state, {
+                loading: true
+            }));
+
+        } else {
+
+            this.props.owner['cancel_edit'](this.props.divid);
+        }
+
+        
     }
 
 
@@ -198,12 +231,12 @@ export class EditDivision extends core.base.BaseView {
         }
 
         var d = Q.defer();
-
+        
         model.save(obj, new Backendless.Async(res => {
 
             toastr.success('Data saved successfully');
 
-            this.props.owner.notify('update_list');
+            this.props.owner.notify('update-list', res['objectId']);
 
             d.resolve(true);
 
@@ -229,9 +262,7 @@ export class EditDivision extends core.base.BaseView {
             toastr.error('Title not found');
             return Q.reject(false);
         }
-
-        utils.spin(this.root);
-
+        
         var model = Backendless.Persistence.of('compdivs');
 
         var d = Q.defer();
@@ -240,7 +271,7 @@ export class EditDivision extends core.base.BaseView {
 
             toastr.success('Data saved successfully');
             
-            this.props.owner.notify('update_list');
+            this.props.owner.notify('update-list', res['objectId']);
 
             d.resolve(true);
 
