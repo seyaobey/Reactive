@@ -82,7 +82,7 @@ export class EditDivision extends core.base.BaseView {
 
         var depts = !this.item ? [] : this.item.depts();
 
-        return <DepartmentsList divid={this.props.divid} depts={depts} />
+        return <DepartmentsList div_obj={this.item} />
     }
 
 
@@ -286,8 +286,8 @@ interface DepartmentsListState extends core.base.BaseState {
 }
 
 export interface DepartmentsListProps extends core.base.BaseProps{
-    divid: string,
-    depts:any[]
+    div_obj:any,
+    //depts:any[]
 }
 
 enum actions { NONE, ADD_NEW_DEPARTMENT, EDIT_DEPARTMENT, RELOAD_DATA }
@@ -296,20 +296,46 @@ export class DepartmentsList extends core.base.BaseView {
 
     props: DepartmentsListProps;
     state: DepartmentsListState;
-    deps: any[];
+    depts: any[];
+    get divid(): string {
+        return _.result(this.props.div_obj,'objectId')
+    }
 
+    get deptview(): EditDepartment {
+        return this.refs['deptview'] as EditDepartment;
+    }
 
     constructor(props: DepartmentsListProps) {
-        super(props);        
+        super(props);
+        this.state.loading = true;
+    }
+
+    componentDidMount() {
+
+        super.componentDidMount();
+
+        this.forceUpdate();
+    }
+    
+
+    componentDidUpdate() {
+
+        super.componentDidUpdate();
+
+        if (this.state.loading) {
+
+            this.load_data().then(() => {
+
+                this.setState(_.extend({}, this.state, {
+                    loading: false
+                }));
+            })
+        }
     }
 
 
     render() {
 
-        if (!this.props.divid) {
-            return;
-        }
-        
         
         var btn_add_classes = 'btn-primary';
         if (this.state.action === actions.ADD_NEW_DEPARTMENT || this.state.action === actions.EDIT_DEPARTMENT) {
@@ -334,8 +360,8 @@ export class DepartmentsList extends core.base.BaseView {
 
                         <h2 style={{ display: 'inline-block' }}>Departments</h2>
 
-                        <a href="#" className={"btn {0} pull-right".format(btn_cancel_classes) } onClick={this.cancel_edit.bind(this) } style={{ marginLeft: 10 }}><i className="fa fa-times"></i> cancel</a>
-                        <a href="#" className={"btn {0} pull-right".format(btn_save_classes)} style={{ marginLeft: 10 }}><i className="fa fa-check"></i> save</a>
+                        <a href="#" className={"btn {0} pull-right".format(btn_cancel_classes) } onClick={this.return_from_edit.bind(this) } style={{ marginLeft: 10 }}><i className="fa fa-reply"></i> return</a>
+                        <a href="#" className={"btn {0} pull-right".format(btn_save_classes) } onClick={this.save.bind(this) } style={{ marginLeft: 10 }}><i className="fa fa-check"></i> save</a>
                         <a href="#" className={"btn {0} pull-right".format(btn_add_classes) } onClick={this.add_new_dep.bind(this) } style={{ marginLeft: 10 }}><i className="fa fa-plus"></i> new department</a>
 
                         </div>
@@ -356,15 +382,14 @@ export class DepartmentsList extends core.base.BaseView {
 
             case actions.ADD_NEW_DEPARTMENT: {
 
-                return <EditDepartment deptid={null} />
+                return <EditDepartment ref="deptview" dept_id={null} div_id={_.result(this.props.div_obj, 'objectId') } owner={this}/>
 
             } 
 
             case actions.EDIT_DEPARTMENT: {
                 
-                return <EditDepartment deptid={this.state.edit_deptid} />
+                return <EditDepartment  ref="deptview" dept_id={this.state.edit_deptid}  div_id={_.result(this.props.div_obj, 'objectId')}  owner={this}/>
             }
-
 
             case actions.RELOAD_DATA:
             default:
@@ -385,14 +410,24 @@ export class DepartmentsList extends core.base.BaseView {
     }
 
 
-    cancel_edit(e: Event) {
+    return_from_edit(e: Event) {
 
         e.preventDefault();
 
-        this.setState(_.extend({}, this.state, {
-            loading: true,
-            action: actions.RELOAD_DATA
-        }));
+        utils.spin(this.root);
+
+        this.load_data().then(() => {
+
+            this.setState(_.extend({}, this.state, {
+                loading: true,
+                action: actions.RELOAD_DATA
+            }));
+        }).finally(() => {
+
+            utils.unspin(this.root);
+        });
+
+        
     }
 
 
@@ -426,7 +461,7 @@ export class DepartmentsList extends core.base.BaseView {
                     <tbody>
           
                         {
-                        _.map(this.props.depts, dep => {
+                        _.map(this.depts, dep => {
 
                         var tr =
                                     <tr key={dep['objectId']() } data-rowid={"{0}".format(dep['objectId']()) }>
@@ -456,7 +491,7 @@ export class DepartmentsList extends core.base.BaseView {
 
     load_data() {
 
-        if (!this.props.divid) {
+        if (!this.divid) {
             return Q.reject(false);
         }
        
@@ -464,7 +499,7 @@ export class DepartmentsList extends core.base.BaseView {
 
         var qry = new Backendless.DataQuery();
 
-        qry.condition = "compdivs_id = '{0}'".format(this.props.divid);
+        qry.condition = "compdivs_id = '{0}'".format(this.divid);
         
 
         var that = this;
@@ -475,7 +510,7 @@ export class DepartmentsList extends core.base.BaseView {
 
         model.find(qry, new Backendless.Async((res: any) => {
 
-            this.deps = res.data[0];
+            this.depts = res.data;
                         
             d.resolve(true);
 
@@ -484,12 +519,21 @@ export class DepartmentsList extends core.base.BaseView {
         return d.promise;
 
     }
+
+
+    save() {
+
+        if (this.deptview) {
+            this.deptview.save();
+        }
+    }
 }
 
 
 
 interface EditDepartmentProps extends core.base.BaseProps {
-    deptid:any
+    dept_id: any,
+    div_id:any
 }
 interface EditDepartmentState extends core.base.BaseState {
 }
@@ -498,6 +542,11 @@ class EditDepartment extends core.base.BaseView {
     props: EditDepartmentProps;
     state: EditDepartmentState;
     item: any;
+    div_obj: any;
+
+    get isNew(): boolean {
+        return !this.props.dept_id
+    }
 
     constructor(props: EditDepartmentProps) {
         super(props);
@@ -515,7 +564,7 @@ class EditDepartment extends core.base.BaseView {
 
                 <b.FormGroup controlId="formControlsText">
                             <h3>Title</h3>
-                            <b.FormControl type="text" className="edit-mode" style={{ height: 50, fontSize: 20 }}
+                            <b.FormControl type="text" className="edit-mode"
                                 data-bind="textInput:compdept_title" placeholder="Enter a title" />                            
                             </b.FormGroup>
 
@@ -523,7 +572,7 @@ class EditDepartment extends core.base.BaseView {
 
                      <b.FormGroup controlId="formControlsText">
                             <h3>Description</h3>
-                            <textarea rows={3} id="compdept_descr" style={{ fontSize: 20 }}
+                            <textarea rows={3} id="compdept_descr"
                                 data-bind="textInput:compdept_descr" className="custom-scroll form-control edit-mode" />                            
                      </b.FormGroup>
             </div>
@@ -543,20 +592,19 @@ class EditDepartment extends core.base.BaseView {
     componentDidUpdate() {
 
         if (this.state.loading) {
+            
+            utils.spin(this.root);
 
-            if (!this.props.deptid) {
-                // this is new
-                // -> go to binding
-            } else {
+            this.load_data().then(() => {
 
-                this.load_dept().then(() => {
+                this.setState(_.extend({}, this.state, {
+                    loading: false
+                }));
+            }).finally(() => {
 
-                    this.setState(_.extend({}, this.state, {
-                        loading: false
-                    }));
-                });
-            }
-
+                utils.unspin(this.root);
+            });
+            
         } else {
 
             ko.cleanNode(this.root[0]);
@@ -568,27 +616,145 @@ class EditDepartment extends core.base.BaseView {
     }
 
 
-    load_dept() {
 
-        var d = Q.defer();
-
-        var model = Backendless.Persistence.of('compdept');
+    load_data() {
+        
+        var model = Backendless.Persistence.of('compdivs');
 
         var qry = new Backendless.DataQuery();
 
-        qry.condition = "objectId = '{0}'".format(this.props.deptid);
-        
+        qry.condition = "objectId = '{0}'".format(this.props.div_id);
+
+        qry.options = { relations: ["depts"] };
+
+        var that = this;
+
         var d = Q.defer();
-        
+
+        var that = this;
+
         model.find(qry, new Backendless.Async((res: any) => {
 
-            this.item = ko['mapping'].fromJS(res.data[0]);
+            this.div_obj = res.data[0];
 
-            d.resolve(true);
+            if (!that.isNew) {
+
+                var dept = _.find(res.data[0].depts, dep => {
+                    return dep['objectId'] === this.props.dept_id;
+                });
+
+                that.item = ko['mapping'].fromJS(dept);
+
+            } else {
+
+                var obj = _.extend(new CompDept(), {
+                    ___class: 'compdept',
+                    compdivs_id: this.div_obj['objectId'],
+                    compdept_title: '',
+                    compdept_descr: ''
+                });
+
+                this.item = ko['mapping'].fromJS(obj);
+
+            }
+            
+            d.resolve(that.item);
 
         }));
 
         return d.promise;
 
     }
+
+
+
+    save() {
+
+        utils.spin(this.root);
+        
+        if (!this.props.dept_id) {
+
+            this.add_new_div().then(() => {
+
+            }).finally(() => {
+                utils.unspin(this.root);
+            });
+
+        } else {
+
+            this.save_div().then(() => {
+
+            }).finally(() => {
+                utils.unspin(this.root);
+            });
+        }
+    }
+
+
+    save_div() {
+
+        var obj = ko['mapping'].toJS(this.item);
+
+        utils.spin(this.root);
+
+        var model = Backendless.Persistence.of('compdept');
+
+        var d = Q.defer();
+
+        model.save(obj, new Backendless.Async(res => {
+            
+            toastr.success('Data saved successfully');
+            
+            this.props.owner.notify('update_list');
+
+            d.resolve(true);
+
+        }, err => {
+            
+            toastr.error(err['message']);
+
+            d.reject(false);
+
+        }));
+
+        return d.promise;
+    }
+
+
+    add_new_div() {
+
+        var model = Backendless.Persistence.of('compdivs');
+
+        var obj = ko['mapping'].toJS(this.item);
+        
+        obj['compdept_title'] = this.root.find('[data-bind="textInput:compdept_title"]').val();
+        obj['compdept_descr'] = this.root.find('[data-bind="textInput:compdept_descr"]').val();
+
+        this.div_obj['depts'].push(obj);
+        
+        var d = Q.defer();
+
+        model.save(this.div_obj, new Backendless.Async(res => {
+
+            toastr.success('Data saved successfully');
+            
+            d.resolve(true);
+
+        }, err => {
+            
+            toastr.error(err['message']);
+
+            d.reject(false);
+        }));
+
+        return d.promise;
+    }
+}
+
+
+class CompDept {
+
+    compdivs_id: string
+    compdept_descr: string
+    compdept_title: string
 }
