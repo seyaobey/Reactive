@@ -66,6 +66,7 @@ export class OrganizationView extends core.base.BaseView {
         this.forceUpdate();
     }
 
+    skip: boolean;
 
     componentDidUpdate() {
 
@@ -89,22 +90,14 @@ export class OrganizationView extends core.base.BaseView {
 
         if (!this.state.loading)
         {
-            this.jget('.btn-edit').click((e) => {
-
-                var id = $(e.currentTarget).closest('[data-rowid]').attr('data-rowid');
-
-                this.edit_division(id);
-
-            });
-
             if (this.divs_data && this.divs_data.length > 0) {
 
                 if (this.first_load) {
 
                     this.first_load = false;
 
-                    this.jget('.btn-edit').first().click();
-
+                    this.refs['divs_listview']['select'](this.divs_data[0]['objectId'])
+                    
                 }
             }
 
@@ -171,6 +164,8 @@ export class OrganizationView extends core.base.BaseView {
 
         ReactDOM.unmountComponentAtNode(this.jget('.division-placeholder')[0]);
 
+        this.jget('.division-placeholder').empty();
+
         ReactDOM.render(<EditDivision divid={id} owner={this} />, this.jget('.division-placeholder')[0]);
     }
 
@@ -192,7 +187,7 @@ export class OrganizationView extends core.base.BaseView {
                 
                 <div className="row" style={{ paddingLeft: 20, paddingRight: 20 }}>
 
-                    <h3 style={{ display: 'inline-block' }}>Company divisions</h3>
+                    <h2 style={{ display: 'inline-block' }}>Company divisions</h2>
 
                     <a href="#" className="btn btn-primary btn-outline pull-right" onClick={this.add_division.bind(this)}><i className="fa fa-plus"></i> new division</a>
                 </div>
@@ -269,6 +264,11 @@ class DivisionList extends core.base.BaseView{
     }
 
 
+    select(id: string) {
+        this.edit_div(id);
+    }
+
+
     get_divs_view(div: any) {
 
         if (this.state.loading) {
@@ -290,7 +290,7 @@ class DivisionList extends core.base.BaseView{
                 <span className="text-muted">{div['compdiv_descr']}</span>
                 <div className="agile-detail row" style={{ paddingRight: 10, marginTop:0 }}>
                     <div className="pull-right">
-                        <a className="btn btn-xs btn-white btn-edit" href="#" style={{ marginRight: 10 }}><i className="fa fa-edit"></i> edit</a>
+                        <a className="btn btn-xs btn-white btn-edit" onClick={() => { this.edit_div(div['objectId']) }} href="#" style={{ marginRight: 10 }}><i className="fa fa-edit"></i> edit</a>
                         <a className="btn btn-xs btn-white" href="#"><i className="fa fa-times"></i> delete </a>
                     </div>
 
@@ -311,20 +311,16 @@ class DivisionList extends core.base.BaseView{
 
     componentDidUpdate() {
 
+    }
 
-        this.jget('.btn-edit').click((e) => {
 
-            e.preventDefault();
+    edit_div(id) {
+        
+        this.jget('.danger-element').removeClass('danger-element highlight').addClass('info-element');
 
-            var id = $(e.currentTarget).closest('[data-rowid]').attr('data-rowid');
+        this.jget('[data-rowid="{0}"]'.format(id)).removeClass('info-element').addClass('danger-element highlight');
 
-            this.jget('.danger-element').removeClass('danger-element highlight').addClass('info-element');
-
-            this.jget('[data-rowid="{0}"]'.format(id)).removeClass('info-element').addClass('danger-element highlight');
-
-            this.props.owner['edit_division'](id);
-            
-        });
+        this.props.owner['edit_division'](id);
 
     }
 

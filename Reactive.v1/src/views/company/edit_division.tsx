@@ -13,6 +13,10 @@ import rb = require('react-bootstrap');
 var b: any = rb;
 
 
+
+interface EditDivisionState extends core.base.BaseState {
+    flow: string
+}
 export interface EditDivisionProps extends core.base.BaseProps {
     divid: string
 }
@@ -20,7 +24,14 @@ export interface EditDivisionProps extends core.base.BaseProps {
 export class EditDivision extends core.base.BaseView {
 
     props: EditDivisionProps;
+    state: EditDivisionState;
     item: any;
+
+    constructor(props: EditDivisionProps) {
+        super(props);
+        this.state.loading = true;
+    }
+
     
     render() {
         
@@ -29,13 +40,13 @@ export class EditDivision extends core.base.BaseView {
 
                 <div className="row" style={{ paddingLeft: 20, paddingRight: 20 }}>
 
-                    <h3 style={{ display: 'inline-block' }}>Edit division</h3>
+                    <h2 style={{ display: 'inline-block' }}>Edit division</h2>
 
                     <a href="#" className="btn btn-warning pull-right" onClick={this.cancel.bind(this) } style={{ marginLeft: 10 }}><i className="fa fa-times"></i> cancel</a>
                     <a href="#" className="btn btn-success pull-right btn-save btn-save" onClick={this.save.bind(this)}><i className="fa fa-check"></i> save</a>
                 </div>
-
-                <hr />
+                
+                <br />
 
                 <div className="row" style={{ paddingLeft: 20, paddingRight: 20 }}>
 
@@ -46,55 +57,11 @@ export class EditDivision extends core.base.BaseView {
 
                 </div>
 
-                <br />
+                <hr />
 
-                <div className="department hidden">
-                    
-                    <div className="row" style={{ paddingLeft: 20, paddingRight: 20 }}>
-
-                        <h3 style={{ display: 'inline-block' }}>Departments</h3>
-
-                        <a href="#" className="btn btn-warning btn-outline pull-right" style={{ marginLeft: 10 }}><i className="fa fa-times"></i> cancel</a>
-                        <a href="#" className="btn btn-success btn-outline pull-right" style={{ marginLeft: 10 }}><i className="fa fa-check"></i> save</a>
-                        <a href="#" className="btn btn-primary pull-right" style={{ marginLeft: 10 }}><i className="fa fa-plus"></i> new department</a>
-
-                    </div>
-
-                    <hr />
-
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Department</th>
-                                <th>Description</th>
-                                <th>Username</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td> @mdo</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Jacob</td>
-                                <td>Thornton</td>
-                                <td> @fat</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Larry</td>
-                                <td>the Bird</td>
-                                <td> @twitter</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
+                <div className="depst">
+                    {this.display_deps()}
                 </div>
-
 
 
 
@@ -107,38 +74,55 @@ export class EditDivision extends core.base.BaseView {
     }
 
 
+    display_deps() {
+
+        if (this.state.loading) {
+            return
+        }
+
+        var depts = !this.item ? [] : this.item.depts();
+
+        return <DepartmentsList divid={this.props.divid} depts={depts} />
+    }
+
+
     componentDidMount() {
 
         super.componentDidMount();
-
+        
         this.forceUpdate();
+        
     }
 
 
     componentDidUpdate() {
 
-        if (this.props.divid) {
-            
-            // load data + bind
+        if (this.state.loading) {
 
-            utils.spin(this.root);
+            if (this.props.divid) {
 
-            this.load_data().then(() => {
+                utils.spin(this.root);
 
-                this.state.loading = false;
-                
-                ko.cleanNode(this.root[0]);
+                this.load_data().then(() => {
 
-                ko.applyBindings(this.item, this.root[0]);
+                    this.setState(_.extend({}, this.state, {
+                        loading: false
+                    }));
 
-                this.jget('.department').removeClass('hidden')
-                
-            }).finally(() => {
+                    ko.cleanNode(this.root[0]);
 
-                utils.unspin(this.root);
+                    ko.applyBindings(this.item, this.root[0]);
 
-            });
+
+                }).finally(() => {
+
+                    utils.unspin(this.root);
+
+                });
+            }
         }
+
+        
     }
 
 
@@ -172,6 +156,7 @@ export class EditDivision extends core.base.BaseView {
         return d.promise;
 
     }
+
 
     save() {
 
@@ -251,8 +236,7 @@ export class EditDivision extends core.base.BaseView {
         return d.promise;
         
     }
-
-
+    
 
     save_div() {
 
@@ -291,4 +275,190 @@ export class EditDivision extends core.base.BaseView {
 class CompDiv {
     usrid: string
     compdiv_title: string
+}
+
+
+
+
+interface DepartmentsListState extends core.base.BaseState {
+    action: actions
+}
+
+export interface DepartmentsListProps extends core.base.BaseProps{
+    divid: string,
+    depts:any[]
+}
+
+enum actions { NONE, ADD_NEW_DEPARTMENT, RELOAD_DATA }
+
+export class DepartmentsList extends core.base.BaseView {
+
+    props: DepartmentsListProps;
+    state: DepartmentsListState;
+    deps: any[];
+
+
+    constructor(props: DepartmentsListProps) {
+        super(props);        
+    }
+
+
+    render() {
+
+        if (!this.props.divid) {
+            return;
+        }
+
+        var btn_add_classes = this.state.action === actions.ADD_NEW_DEPARTMENT ? 'btn-default' : 'btn-primary';
+        var btn_save_classes = this.state.action === actions.ADD_NEW_DEPARTMENT ? 'btn-success btn-outline' : 'btn-default btn-outline';
+        var btn_cancel_classes = this.state.action === actions.ADD_NEW_DEPARTMENT ? 'btn-warning btn-outline' : 'btn-default btn-outline';
+
+        var html = 
+            <div className="department">
+
+                    <div className="row" style={{ paddingLeft: 20, paddingRight: 20 }}>
+
+                        <h2 style={{ display: 'inline-block' }}>Departments</h2>
+
+                        <a href="#" className={"btn {0} pull-right".format(btn_cancel_classes) } onClick={this.cancel_edit.bind(this) } style={{ marginLeft: 10 }}><i className="fa fa-times"></i> cancel</a>
+                        <a href="#" className={"btn {0} pull-right".format(btn_save_classes)} style={{ marginLeft: 10 }}><i className="fa fa-check"></i> save</a>
+                        <a href="#" className={"btn {0} pull-right".format(btn_add_classes) } onClick={this.add_new_dep.bind(this) } style={{ marginLeft: 10 }}><i className="fa fa-plus"></i> new department</a>
+
+                        </div>
+
+                    <hr />
+
+                    {this.fill_with_data() }
+
+                </div>
+
+        return html;
+    }
+
+
+    add_new_dep(e: Event) {
+
+        e.preventDefault();
+
+        this.setState(_.extend({}, this.state, {
+            action: actions.ADD_NEW_DEPARTMENT
+        }));
+
+    }
+
+
+    cancel_edit(e: Event) {
+
+        e.preventDefault();
+
+        this.setState(_.extend({}, this.state, {
+            loading: true,
+            action: actions.RELOAD_DATA
+        }));
+    }
+
+
+    fill_with_data() {
+
+        
+        var count = 1;
+        
+        var table = 
+            <table className="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Department</th>
+                            <th>Description</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+          
+                        {
+                        _.map(this.props.depts, dep => {
+
+                                var tr =
+                                    <tr>
+                                        <td>{count++}</td>
+
+                                        <td>{dep['compdept_title']()}</td>
+
+                                        <td>{dep['compdept_descr']()}</td>
+
+                                        <td>
+                                            <button className="btn btn-info btn-outline btn-sm">edit</button>
+                                        </td>
+
+                                    </tr>
+                        
+                                return tr;
+                            })
+                        }
+                                      
+                    </tbody>
+            </table>
+        
+        return table;
+    }
+
+
+    //componentDidUpdate() {
+
+    //    switch (this.state.action) {
+
+    //        case actions.ADD_NEW_DEPARTMENT: {
+
+
+    //        } break;
+
+    //        case actions.RELOAD_DATA:
+    //        default: {
+
+    //            if (this.state.loading) {
+
+    //                this.setState(_.extend({}, this.state, {
+    //                    loading: false,
+    //                    action: actions.NONE
+    //                }));
+
+
+    //            }
+
+    //        } break;
+    //    }
+        
+    //}
+
+
+    load_data() {
+
+        if (!this.props.divid) {
+            return Q.reject(false);
+        }
+       
+        var model = Backendless.Persistence.of('compdept');
+
+        var qry = new Backendless.DataQuery();
+
+        qry.condition = "compdivs_id = '{0}'".format(this.props.divid);
+        
+
+        var that = this;
+
+        var d = Q.defer();
+
+        var that = this;
+
+        model.find(qry, new Backendless.Async((res: any) => {
+
+            this.deps = res.data[0];
+                        
+            d.resolve(true);
+
+        }));
+
+        return d.promise;
+
+    }
 }
