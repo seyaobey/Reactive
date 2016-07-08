@@ -18,6 +18,12 @@ export var routes: Types.RouteList = {
         url: 'home/home',
     },
 
+    '/account/dashboard': {
+        url: 'company/account',
+        title: 'My company',
+        path: ['<a href="/account/dashboard">Company</a>', '<strong>Dashboard</strong>']
+    },
+
     '/account/profile': {
         url: 'company/account',
         title:'My company',

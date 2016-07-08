@@ -171,13 +171,15 @@ export module application {
                     this.current_route = route;
 
                     var path = '..' + utils.Path.join('/views', route.url);
+
+                    var that = this;
                     var __params = key;
                     
                     require([path], module => {
 
                         var view = module[Object.keys(module)[0]];
 
-                        ReactDOM.unmountComponentAtNode($(this.__app.settings.rootpage)[0]);
+                        ReactDOM.unmountComponentAtNode($(that.__app.settings.rootpage)[0]);
 
                         $(this.__app.settings.rootpage).empty();
 

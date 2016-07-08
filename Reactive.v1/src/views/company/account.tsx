@@ -1,4 +1,5 @@
-﻿/// <reference path="organization.tsx" />
+﻿/// <reference path="dashboard.tsx" />
+/// <reference path="organization.tsx" />
 // A '.tsx' file enables JSX support in the TypeScript compiler, 
 // for more information see the following page on the TypeScript wiki:
 // https://github.com/Microsoft/TypeScript/wiki/JSX
@@ -10,17 +11,18 @@ import ReactDOM = require('react-dom');
 import core = require('../../lib/core');
 import pn = require('../../ctrls/panels');
 import { OrganizationView, OrganizationViewProps } from './organization';
+import { DashboardView } from './dashboard';
 
 import rb = require('react-bootstrap');
 var b: any = rb;
 
 
-export interface HomeViewProps extends core.base.BaseProps {
+export interface AccountViewProps extends core.base.BaseProps {
     params?: any
 }
-export class HomeView extends core.base.BaseView {
+export class AccountView extends core.base.BaseView {
 
-    props: HomeViewProps;
+    props: AccountViewProps;
 
 
     render() {
@@ -50,6 +52,17 @@ export class HomeView extends core.base.BaseView {
     }
 
 
+    exit_login() {
+
+        $('body').removeClass('gray-bg');
+
+        $('#wrapper').show();
+
+        $('.login-view').hide();
+
+    }
+
+
     resolve_content() {
 
         if (this.props.params) {
@@ -67,16 +80,18 @@ export class HomeView extends core.base.BaseView {
 
     default_content() {
 
-        return <div className="col-lg-12 animated fadeInRight">
-            <div className="text-center m-t-lg">
-                <h1>
-                    Welcome in StampHR
-                </h1>
-                <small>
-                    It is an application skeleton for a typical web app.You can use it to quickly bootstrap your webapp projects and dev environment for these projects.
-                </small>
-            </div>
-        </div>
+        return <DashboardView />
+
+        //return <div className="col-lg-12 animated fadeInRight">
+        //    <div className="text-center m-t-lg">
+        //        <h1>
+        //            Welcome in StampHR
+        //        </h1>
+        //        <small>
+        //            It is an application skeleton for a typical web app.You can use it to quickly bootstrap your webapp projects and dev environment for these projects.
+        //        </small>
+        //    </div>
+        //</div>
 
     }
 

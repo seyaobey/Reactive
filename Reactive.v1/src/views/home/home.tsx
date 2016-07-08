@@ -1,4 +1,5 @@
-﻿/// <reference path="../../lib/core.tsx" />
+﻿/// <reference path="../company/account.tsx" />
+/// <reference path="../../lib/core.tsx" />
 /// <reference path="../../ctrls/panels.tsx" />
 /// <reference path="../../../typings/react/react-bootstrap.d.ts" />
 // A '.tsx' file enables JSX support in the TypeScript compiler, 
@@ -10,6 +11,7 @@ import React = require('react');
 import ReactDOM = require('react-dom');
 import core = require('../../lib/core');
 import pn = require('../../ctrls/panels');
+import { AccountView } from '../company/account';
 
 import rb = require('react-bootstrap');
 var b: any = rb;
@@ -58,16 +60,7 @@ export class HomeView extends core.base.BaseView {
             
         } else {
             
-            return <div className="col-lg-12 animated fadeInRight">
-                <div className="text-center m-t-lg">
-                    <h1>
-                        Welcome to Stamp HR
-                    </h1>
-                    <small>
-                        It is an application skeleton for a typical web app.You can use it to quickly bootstrap your webapp projects and dev environment for these projects.
-                    </small>
-                </div>
-            </div>
+            return <AccountView />
 
         }
         

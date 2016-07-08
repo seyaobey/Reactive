@@ -1566,6 +1566,7 @@
     <TypeScriptCompile Include="src\lib\jx.tsx" />
     <TypeScriptCompile Include="src\lib\utils.ts" />
     <TypeScriptCompile Include="src\views\company\account.tsx" />
+    <TypeScriptCompile Include="src\views\company\dashboard.tsx" />
     <TypeScriptCompile Include="src\views\company\edit_division.tsx" />
     <TypeScriptCompile Include="src\views\company\organization.tsx" />
     <TypeScriptCompile Include="src\views\home\home.tsx" />
