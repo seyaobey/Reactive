@@ -34,13 +34,24 @@ export class EditDivision extends core.base.BaseView {
 
     
     render() {
+
+        var icon = <i className="fa fa-edit" style={{ marginRight:10 }}></i>
+        var title = "Edit division";
+
+        if (!this.props.divid) {
+            icon = <i className="fa fa-plus-circle" style={{ marginRight: 10 }}></i>
+            title = "Add new division";
+        }
         
         var html =
             <pn.BasePanel className="animated fadeInRight" >
 
                 <div className="row" style={{ paddingLeft: 20, paddingRight: 20 }}>
 
-                    <h2 style={{ display: 'inline-block' }}>Edit division</h2>
+                    <h2 style={{ display: 'inline-block' }}>
+                        {icon }
+                        {title}
+                    </h2>
 
                     <a href="#" className="btn btn-warning pull-right" onClick={this.cancel.bind(this) } style={{ marginLeft: 10 }}><i className="fa fa-times"></i> cancel</a>
                     <a href="#" className="btn btn-success pull-right btn-save btn-save" onClick={this.save.bind(this)}><i className="fa fa-check"></i> save</a>
@@ -335,7 +346,6 @@ export class DepartmentsList extends core.base.BaseView {
 
 
     render() {
-
         
         var btn_add_classes = 'btn-primary';
         if (this.state.action === actions.ADD_NEW_DEPARTMENT || this.state.action === actions.EDIT_DEPARTMENT) {
@@ -352,6 +362,7 @@ export class DepartmentsList extends core.base.BaseView {
             btn_cancel_classes = 'btn-warning btn-outline';
         }
         
+        var data = this.depts ? this.depts : [];
 
         var html = 
             <div className="department">
@@ -368,7 +379,7 @@ export class DepartmentsList extends core.base.BaseView {
 
                     <hr />
 
-                    {this.resolve_content() }
+                    {this.resolve_content(data) }
 
                 </div>
 
@@ -376,7 +387,7 @@ export class DepartmentsList extends core.base.BaseView {
     }
 
 
-    resolve_content() {
+    resolve_content(data:any[]) {
 
         switch (this.state.action) {
 
@@ -393,7 +404,7 @@ export class DepartmentsList extends core.base.BaseView {
 
             case actions.RELOAD_DATA:
             default:
-                return this.fill_with_data();
+                return this.fill_with_data(data);
         }
 
     }
@@ -443,10 +454,14 @@ export class DepartmentsList extends core.base.BaseView {
     }
 
 
-    fill_with_data() {
+    fill_with_data(data: any[]) {
 
+        if (data.length === 0) {
+            return
+        }
         
         var count = 1;
+
         
         var table = 
             <table className="table table-hover">
@@ -461,16 +476,16 @@ export class DepartmentsList extends core.base.BaseView {
                     <tbody>
           
                         {
-                        _.map(this.depts, dep => {
-
-                        var tr =
-                                    <tr key={dep['objectId']() } data-rowid={"{0}".format(dep['objectId']()) }>
+                    _.map(this.depts, dep => {
+                        
+                            var tr =
+                                <tr key={ _.result(dep, 'objectId') } data-rowid={"{0}".format(_.result(dep, 'objectId')) }>
 
                                         <td>{count++}</td>
 
-                                        <td>{dep['compdept_title']()}</td>
+                                        <td>{_.result(dep, 'compdept_title')}</td>
 
-                                        <td>{dep['compdept_descr']()}</td>
+                                        <td>{_.result(dep, 'compdept_descr')}</td>
 
                                         <td>
                                             <button onClick={this.edit_department.bind(this)} className="btn btn-info btn-outline btn-sm">edit</button>
@@ -555,10 +570,18 @@ class EditDepartment extends core.base.BaseView {
 
     render() {
 
+        var icon = <i className="fa fa-edit" style={{ marginRight: 10 }}></i>
+        var title = "Edit department";
+
+        if (!this.props.dept_id) {
+            icon = <i className="fa fa-plus-circle" style={{ marginRight: 10 }}></i>
+            title = "Add new department";
+        }
+
         var html =
             <div className="row animated fadeInUp" style={{ paddingLeft: 20, paddingRight: 20, marginTop:30 }}>
 
-                <h2><i className="fa fa-edit" ></i> Edit department</h2>
+                <h2>{icon}{title}</h2>
 
                 <br />
 

@@ -61,7 +61,7 @@ export class HomeView extends core.base.BaseView {
             return <div className="col-lg-12 animated fadeInRight">
                 <div className="text-center m-t-lg">
                     <h1>
-                        Welcome in StampHR
+                        Welcome to Stamp HR
                     </h1>
                     <small>
                         It is an application skeleton for a typical web app.You can use it to quickly bootstrap your webapp projects and dev environment for these projects.
@@ -142,6 +142,10 @@ export class HomeView extends core.base.BaseView {
         $('.sidebar-collapse li a').removeClass('active');
         
         var menu = this.props.params;
+
+        if (menu === '/') {
+
+        }
         
         $('[href="{0}"]'.format(menu)).closest('li').addClass('active');
         $('[href="{0}"]'.format(menu)).parents('li').last().addClass('active');
