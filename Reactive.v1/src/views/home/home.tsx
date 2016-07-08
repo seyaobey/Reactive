@@ -92,15 +92,6 @@ export class HomeView extends core.base.BaseView {
     resolve_subview() {
 
         switch (this.props.params) {
-
-            case '/panels':
-
-                return <Panels />
-
-            case '/edit-controls':
-
-                return <Panels />
-
             default:
                 return this.default_content();
         }
@@ -110,9 +101,9 @@ export class HomeView extends core.base.BaseView {
 
     componentDidMount() {
 
+
         super.componentDidMount();
-
-
+        
         if (this.app.router.params === 'login' || !Backendless.UserService.getCurrentUser()) {
 
             this.enter_login();
@@ -124,7 +115,6 @@ export class HomeView extends core.base.BaseView {
             this.exit_login();
         }
         
-
         this.highlight_active_menu();
     }
 
@@ -133,15 +123,15 @@ export class HomeView extends core.base.BaseView {
 
         $('.sidebar-collapse li').removeClass('active');
         $('.sidebar-collapse li a').removeClass('active');
-        
+
         var menu = this.props.params;
 
-        if (menu === '/') {
-
+        if (!menu || menu === '/') {
+            menu = '/account/dashboard'
         }
-        
-        $('[href="{0}"]'.format(menu)).closest('li').addClass('active');
-        $('[href="{0}"]'.format(menu)).parents('li').last().addClass('active');
+
+        $('.nav-second-level [href="{0}"]'.format(menu)).closest('li').addClass('active');
+        $('.nav-second-level [href="{0}"]'.format(menu)).parents('li').last().addClass('active');
     }
 
 }
@@ -256,25 +246,30 @@ class Login extends core.base.BaseView {
 
 
     componentDidMount() {
-
+        
         $('.btn-login').off('click');
         $('.btn-login').click(() => {
 
-            utils.spin($('body'));
-
-            var email = $(this.root).find('[type="email"]').val();
-            var password = $(this.root).find('[type="password"]').val();
-
-            Backendless.UserService.login(email, password, true, new Backendless.Async(res => {
-                utils.unspin($('body'));
-                toastr.success('Login was successfull');
-                this.app.router.navigate('/');
-            }, err => {
-                utils.unspin($('body'));
-                toastr.error(err['message']);
-            }));
+            this.login($(this.root).find('[type="email"]').val(), $(this.root).find('[type="password"]').val())
 
         });
+
+        this.login('seyaobey@gmail.com','JazzTheSoul1.')
+    }
+
+
+    private login(email: string, password: string) {
+
+        utils.spin($('body'));
+        
+        Backendless.UserService.login(email, password, true, new Backendless.Async(res => {
+            utils.unspin($('body'));
+            toastr.success('Login was successfull');
+            this.app.router.navigate('/');
+        }, err => {
+            utils.unspin($('body'));
+            toastr.error(err['message']);
+        }));
 
     }
 }

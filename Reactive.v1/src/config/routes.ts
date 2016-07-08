@@ -10,7 +10,9 @@ import {Types} from '../lib/jx';
 
 export var routes: Types.RouteList = {
     '/': {
-        url: 'home/home',      
+        url: 'home/home',        
+        title: 'Account',
+        path: ['<a href="/account/dashboard">Company</a>', '<strong>Dashboard</strong>']
     },
 
     '/login': {
@@ -20,26 +22,26 @@ export var routes: Types.RouteList = {
 
     '/account/dashboard': {
         url: 'company/account',
-        title: 'My company',
+        title: 'Account',
         path: ['<a href="/account/dashboard">Company</a>', '<strong>Dashboard</strong>']
     },
 
     '/account/profile': {
         url: 'company/account',
-        title:'My company',
+        title:'Account',
         path: ['<a href="/account/profile">Company</a>', '<strong>Profile</strong>' ]
     },
 
     '/account/organization': {
         url: 'company/account',
         params:'organization',
-        title: 'My company',
+        title: 'Account',
         path: ['<a href="/account/organization">Company</a>', '<strong>Organization</strong>']
     },
 
     '/account/employees': {
         url: 'company/account',
-        title: 'My company',
+        title: 'Account',
         path: ['<a href="/account/employees">Company</a>', '<strong>Employees</strong>']
     },
     

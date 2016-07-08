@@ -82,17 +82,6 @@ export class AccountView extends core.base.BaseView {
 
         return <DashboardView />
 
-        //return <div className="col-lg-12 animated fadeInRight">
-        //    <div className="text-center m-t-lg">
-        //        <h1>
-        //            Welcome in StampHR
-        //        </h1>
-        //        <small>
-        //            It is an application skeleton for a typical web app.You can use it to quickly bootstrap your webapp projects and dev environment for these projects.
-        //        </small>
-        //    </div>
-        //</div>
-
     }
 
 
@@ -114,6 +103,9 @@ export class AccountView extends core.base.BaseView {
 
         super.componentDidMount();
 
+        if (true) {
+        }
+
         $.getScript('/js/inspinia.js');
 
         this.update_url_path();
@@ -129,8 +121,12 @@ export class AccountView extends core.base.BaseView {
 
         var menu = this.props.params;
 
-        $('[href="{0}"]'.format(menu)).closest('li').addClass('active');
-        $('[href="{0}"]'.format(menu)).parents('li').last().addClass('active');
+        if (!menu || menu === '/') {
+            menu = '/account/dashboard'
+        }
+
+        $('.nav-second-level [href="{0}"]'.format(menu)).closest('li').addClass('active');
+        $('.nav-second-level [href="{0}"]'.format(menu)).parents('li').last().addClass('active');
     }
 
 }

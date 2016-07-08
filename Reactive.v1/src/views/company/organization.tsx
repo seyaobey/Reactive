@@ -16,7 +16,7 @@ import { EditDivision, EditDivisionProps} from './edit_division';
 
 
 interface OrganizationViewState extends core.base.BaseState {
-    selected_divid: string
+    divid: string
 }
 export interface OrganizationViewProps extends core.base.BaseProps {    
 }
@@ -81,11 +81,14 @@ export class OrganizationView extends core.base.BaseView {
                     loading: false
                 }));
 
-                this.state.selected_divid = null;
+                this.state.divid = null;
 
             }).finally(() => {
 
                 utils.unspin(this.root);
+
+            }).done(() => {
+
             });
         }
 
@@ -101,9 +104,8 @@ export class OrganizationView extends core.base.BaseView {
                     
                 }
             }
-
         }
-        
+
     }
 
 
@@ -163,25 +165,27 @@ export class OrganizationView extends core.base.BaseView {
 
     edit_division(id:any) {
 
+
         ReactDOM.unmountComponentAtNode(this.jget('.division-placeholder')[0]);
 
         this.jget('.division-placeholder').empty();
+
+        this.state.divid = id;
 
         ReactDOM.render(<EditDivision divid={id} owner={this} />, this.jget('.division-placeholder')[0]);
     }
 
 
     cancel_edit(id: any) {
-
-        ReactDOM.unmountComponentAtNode(this.jget('.division-placeholder')[0]);
-
+        
+        this.edit_division(id);
     }
 
 
 
     get_divs_list() {
 
-        var selectid = this.state.selected_divid;
+        var selectid = this.state.divid;
         
         var html =
             <div>
@@ -283,16 +287,16 @@ class DivisionList extends core.base.BaseView{
             type = 'danger-element highlight';
 
         }
-        
-        
+
+                
         var html =
             <li key={div['objectId']} data-rowid={div['objectId']} className={type}>
                 <a href='javascript:void(0)' style={{ display: 'block', fontSize: 15 }}>{div['compdiv_title']}</a>
                 <span className="text-muted">{div['compdiv_descr']}</span>
                 <div className="agile-detail row" style={{ paddingRight: 10, marginTop:0 }}>
                     <div className="pull-right">
-                        <a className="btn btn-xs btn-white btn-edit" onClick={() => { this.edit_div(div['objectId']) }} href="#" style={{ marginRight: 10 }}><i className="fa fa-edit"></i> edit</a>
-                        <a className="btn btn-xs btn-white" href="#"><i className="fa fa-times"></i> delete </a>
+                        <a className="btn btn-xs btn-white btn-edit" href="javascript:void(0)" onClick={() => { this.edit_div(div['objectId']) } } style={{ marginRight: 10 }}><i className="fa fa-edit"></i> edit</a>
+                        <a className="btn btn-xs btn-white" href="javascript:void(0)"><i className="fa fa-times"></i> delete </a>
                     </div>
 
                 </div>
