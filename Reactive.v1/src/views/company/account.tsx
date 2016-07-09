@@ -103,9 +103,6 @@ export class AccountView extends core.base.BaseView {
 
         super.componentDidMount();
 
-        if (true) {
-        }
-
         $.getScript('/js/inspinia.js');
 
         this.update_url_path();

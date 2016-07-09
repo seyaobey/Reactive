@@ -44,5 +44,11 @@ export var routes: Types.RouteList = {
         title: 'Account',
         path: ['<a href="/account/employees">Company</a>', '<strong>Employees</strong>']
     },
+
+    '/profiles/explore': {
+        url: '/profiles/profiles_explore',
+        title: 'Profiles',
+        path: ['<a href="/profiles/explore">Profiles</a>', '<strong>Explore</strong>']
+    },
     
 }
