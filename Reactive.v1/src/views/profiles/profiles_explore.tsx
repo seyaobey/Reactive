@@ -25,18 +25,18 @@ export class ProfilesExplorer extends core.base.BaseView {
         var html =
             <b.Row className="animated fadeInRight">
 
-                <b.Col md={5} xs={12}>
+                <b.Col md={5} sm={12} xs={12}>
 
-                    <pn.BasePanel style={{ minHeight: 350 }}>
+                    <pn.BasePanel>
                         <h2>Profiles <button className="btn btn-primary pull-right"><i className="fa fa-plus-circle"></i> Add new </button></h2>
                         <hr />
                     </pn.BasePanel>
 
                 </b.Col>
 
-                <b.Col md={7} xs={12}>
+                <b.Col md={7} sm={12} xs={12}>
 
-                    <pn.BasePanel style={{ minHeight: 350 }}>
+                    <pn.BasePanel>
                         <h2><i className="fa fa-edit"></i> Edit profile</h2>
                     </pn.BasePanel>
 
@@ -67,6 +67,7 @@ export class ProfilesExplorer extends core.base.BaseView {
 
         $('.sidebar-collapse li').removeClass('active');
         $('.sidebar-collapse li a').removeClass('active');
+        $('.sidebar-collapse .collapse').removeClass('in');
 
         var menu = this.props.params;
 
@@ -74,6 +75,7 @@ export class ProfilesExplorer extends core.base.BaseView {
             menu = '/profiles/explore'
         }
 
+        $('.nav-second-level [href="{0}"]'.format(menu)).closest('.collapse').addClass('in');
         $('.nav-second-level [href="{0}"]'.format(menu)).closest('li').addClass('active');
         $('.nav-second-level [href="{0}"]'.format(menu)).parents('li').last().addClass('active');
     }

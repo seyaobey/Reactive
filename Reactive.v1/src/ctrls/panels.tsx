@@ -19,7 +19,7 @@ export interface BasePanelProps extends core.base.BaseProps {
 
     },
     style?: any,
-    className?: any
+    className?: any    
 }
 export class BasePanel extends core.base.BaseView {
     
@@ -65,7 +65,7 @@ export class BasePanel extends core.base.BaseView {
 
             </div>
 
-                <div className="ibox-content">
+            <div className="ibox-content">
                 {this.props.children}
             </div>
 
@@ -82,6 +82,7 @@ export class BasePanel extends core.base.BaseView {
     componentDidMount() {
 
         this.init_toolbox();        
+        
     }
 
 
