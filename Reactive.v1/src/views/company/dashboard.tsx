@@ -51,6 +51,12 @@ export class DashboardView extends core.base.BaseView {
 
                         </pn.BasePanel>
 
+                        <br />
+
+                        <pn.BasePanel style={{ minHeight: 350 }}>
+                            <h2>Social feed</h2>
+                        </pn.BasePanel>
+
                     </b.Col>
 
                     <b.Col lg={7} md={6} xs={12}>
@@ -215,9 +221,7 @@ export class DashboardView extends core.base.BaseView {
 
                     <b.Col lg={5} md={6} xs={12}>
 
-                        <pn.BasePanel style={{ minHeight: 350 }}>
-                            <h2>Social feed</h2>
-                        </pn.BasePanel>
+                        
 
                     </b.Col>
 

@@ -291,11 +291,11 @@ class DivisionList extends core.base.BaseView{
                 
         var html =
             <li key={div['objectId']} data-rowid={div['objectId']} className={type}>
-                <a href='javascript:void(0)' style={{ display: 'block', fontSize: 15 }}>{div['compdiv_title']}</a>
+                <a href='javascript:void(0)' onClick={(e) => { this.edit_div( div['objectId']) } } style={{ display: 'block', fontSize: 15 }}>{div['compdiv_title']}</a>
                 <span className="text-muted">{div['compdiv_descr']}</span>
                 <div className="agile-detail row" style={{ paddingRight: 10, marginTop:0 }}>
                     <div className="pull-right">
-                        <a className="btn btn-xs btn-white btn-edit" href="javascript:void(0)" onClick={() => { this.edit_div(div['objectId']) } } style={{ marginRight: 10 }}><i className="fa fa-edit"></i> edit</a>
+                        <a className="btn btn-xs btn-white btn-edit" href="javascript:void(0)" onClick={(e) => { this.edit_div(div['objectId']) } } style={{ marginRight: 10 }}><i className="fa fa-edit"></i> edit</a>
                         <a className="btn btn-xs btn-white" href="javascript:void(0)"><i className="fa fa-times"></i> delete </a>
                     </div>
 

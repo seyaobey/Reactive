@@ -16,31 +16,34 @@ var b: any = rb;
 export interface ProfilesExplorerProps extends core.base.BaseProps {
     params?: any
 }
+
+interface ProfilesExplorerState extends core.base.BaseState {
+    right_view: string
+}
+
 export class ProfilesExplorer extends core.base.BaseView {
 
     props: ProfilesExplorerProps;
+    state: ProfilesExplorerState;
 
     render() {
 
         var html =
             <b.Row className="animated fadeInRight">
 
-                <b.Col md={5} sm={12} xs={12}>
+                <b.Col md={5} xs={12}>
 
-                    <pn.BasePanel>
-                        <h2>Profiles <button className="btn btn-primary pull-right"><i className="fa fa-plus-circle"></i> Add new </button></h2>
+                    <pn.BasePanel style={{ minHeight: 350 }}>
+                        <h2>Profiles <button className="btn btn-primary pull-right btn-new-profile"><i className="fa fa-plus-circle"></i> Add new </button></h2>
                         <hr />
                     </pn.BasePanel>
 
                 </b.Col>
 
-                <b.Col md={7} sm={12} xs={12}>
+                <b.Col md={7} xs={12}>
 
-                    <pn.BasePanel>
-                        <h2><i className="fa fa-edit"></i> Edit profile</h2>
-                    </pn.BasePanel>
-
-
+                    {this.resolve_right_view()}
+                    
                 </b.Col>
 
             </b.Row>
@@ -58,16 +61,28 @@ export class ProfilesExplorer extends core.base.BaseView {
 
         this.exit_login();   
 
+        this.init_actions();
+        
         this.highlight_active_menu();
 
     }
 
 
+    init_actions() {
+
+        this.root.find('.btn-new-profile').click(() => {
+
+            this.setState(_.extend(this.state, {
+                right_view:'add_new_profile'
+            } as ProfilesExplorerState))
+        });
+    }
+
+    
     highlight_active_menu() {
 
         $('.sidebar-collapse li').removeClass('active');
         $('.sidebar-collapse li a').removeClass('active');
-        $('.sidebar-collapse .collapse').removeClass('in');
 
         var menu = this.props.params;
 
@@ -75,10 +90,30 @@ export class ProfilesExplorer extends core.base.BaseView {
             menu = '/profiles/explore'
         }
 
-        $('.nav-second-level [href="{0}"]'.format(menu)).closest('.collapse').addClass('in');
         $('.nav-second-level [href="{0}"]'.format(menu)).closest('li').addClass('active');
         $('.nav-second-level [href="{0}"]'.format(menu)).parents('li').last().addClass('active');
     }
+
+    resolve_right_view() {
+
+        switch (this.state.right_view) {
+
+            case 'add_new_profile': {
+                return <pn.BasePanel className="animated fadeInRight" style={{ minHeight: 350 }}>
+                        <h2><i className="fa fa-plus-circle"></i> New profile</h2>
+                        <hr />
+                    </pn.BasePanel>
+            }
+
+            default:
+                return <pn.BasePanel style={{ minHeight: 350 }}>
+                            <h2><i className="fa fa-edit"></i> Edit profile</h2>
+                            <hr />
+                        </pn.BasePanel>
+        }
+
+    }
+
 
 
     exit_login() {
