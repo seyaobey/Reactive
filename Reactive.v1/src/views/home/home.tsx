@@ -118,7 +118,7 @@ export class HomeView extends core.base.BaseView {
         this.highlight_active_menu();
     }
 
-
+ 
     highlight_active_menu() {
 
         $('.sidebar-collapse li').removeClass('active');
@@ -130,6 +130,7 @@ export class HomeView extends core.base.BaseView {
             menu = '/account/dashboard'
         }
 
+        $('.nav-second-level [href="{0}"]'.format(menu)).closest('.collapse').addClass('in');
         $('.nav-second-level [href="{0}"]'.format(menu)).closest('li').addClass('active');
         $('.nav-second-level [href="{0}"]'.format(menu)).parents('li').last().addClass('active');
     }
