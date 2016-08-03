@@ -1571,6 +1571,8 @@
     <TypeScriptCompile Include="src\views\company\organization.tsx" />
     <TypeScriptCompile Include="src\views\home\home.tsx" />
     <TypeScriptCompile Include="src\views\home\login.tsx" />
+    <TypeScriptCompile Include="src\views\profiles\profiles_add_wizard.tsx" />
+    <TypeScriptCompile Include="src\views\profiles\profiles_edit_view.tsx" />
     <TypeScriptCompile Include="src\views\profiles\profiles_explore.tsx" />
   </ItemGroup>
   <ItemGroup>

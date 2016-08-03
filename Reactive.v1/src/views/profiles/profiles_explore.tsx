@@ -1,4 +1,5 @@
-﻿// A '.tsx' file enables JSX support in the TypeScript compiler, 
+﻿/// <reference path="profiles_add_wizard.tsx" />
+// A '.tsx' file enables JSX support in the TypeScript compiler, 
 // for more information see the following page on the TypeScript wiki:
 // https://github.com/Microsoft/TypeScript/wiki/JSX
 
@@ -7,6 +8,8 @@ import React = require('react');
 import ReactDOM = require('react-dom');
 import core = require('../../lib/core');
 import pn = require('../../ctrls/panels');
+import wz = require('./profiles_add_wizard');
+import ed = require('./profiles_edit_view');
 
 import rb = require('react-bootstrap');
 var b: any = rb;
@@ -99,17 +102,12 @@ export class ProfilesExplorer extends core.base.BaseView {
         switch (this.state.right_view) {
 
             case 'add_new_profile': {
-                return <pn.BasePanel className="animated fadeInRight" style={{ minHeight: 350 }}>
-                        <h2><i className="fa fa-plus-circle"></i> New profile</h2>
-                        <hr />
-                    </pn.BasePanel>
+                return <wz.ProfileAddWizard owner={this}  />
             }
 
+
             default:
-                return <pn.BasePanel style={{ minHeight: 350 }}>
-                            <h2><i className="fa fa-edit"></i> Edit profile</h2>
-                            <hr />
-                        </pn.BasePanel>
+                return <ed.ProfileEditView owner={this} />
         }
 
     }
