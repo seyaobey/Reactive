@@ -1574,8 +1574,10 @@
     <TypeScriptCompile Include="src\views\home\home.tsx" />
     <TypeScriptCompile Include="src\views\home\login.tsx" />
     <TypeScriptCompile Include="src\views\profiles\profiles_add_wizard.tsx" />
+    <TypeScriptCompile Include="src\views\profiles\profiles_basic_wiz_page.tsx" />
     <TypeScriptCompile Include="src\views\profiles\profiles_edit_view.tsx" />
     <TypeScriptCompile Include="src\views\profiles\profiles_explore.tsx" />
+    <TypeScriptCompile Include="src\views\profiles\profile_wizard_basepage.tsx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
