@@ -65,6 +65,7 @@
     <Content Include="css\animate.css" />
     <Content Include="css\bootstrap.css" />
     <Content Include="css\bootstrap.min.css" />
+    <Content Include="css\jquery.steps.css" />
     <Content Include="css\patterns\1.png" />
     <Content Include="css\patterns\2.png" />
     <Content Include="css\patterns\3.png" />
@@ -1047,6 +1048,7 @@
     <Content Include="img\p_big3.jpg" />
     <Content Include="img\rails_logo.png" />
     <Content Include="img\zender_logo.png" />
+    <Content Include="js\jquery.steps.js" />
     <Content Include="js\plugins\chartist\chartist.min.js.map" />
     <Content Include="js\plugins\diff_match_patch\COPYING" />
     <Content Include="js\plugins\justified-gallery\README.md" />
