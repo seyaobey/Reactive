@@ -6,7 +6,7 @@ import React = require('react');
 import ReactDOM = require('react-dom');
 import core = require('../../lib/core');
 import pn = require('../../ctrls/panels');
-import bsi = require('./profiles_basic_wiz_page');
+import bsi = require('./profiles_wiz_basicinfo');
 
 
 import rb = require('react-bootstrap');

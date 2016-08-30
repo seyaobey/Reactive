@@ -26,10 +26,10 @@ export var routes: Types.RouteList = {
         path: ['<a href="/account/dashboard">Company</a>', '<strong>Dashboard</strong>']
     },
 
-    '/account/profile': {
+    '/account/settings': {
         url: 'company/account',
         title:'Account',
-        path: ['<a href="/account/profile">Company</a>', '<strong>Profile</strong>' ]
+        path: ['<a href="/account/settings">Company</a>', '<strong>Settings</strong>' ]
     },
 
     '/account/organization': {

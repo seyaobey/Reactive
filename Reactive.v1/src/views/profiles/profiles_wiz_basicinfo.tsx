@@ -24,12 +24,8 @@ export class ProfileWizard_BaseInfo_Page extends bw.ProfileWizard_BasePage {
 
         var html = 
             <form role="form">
-                <div className="form-group"><label>Email</label> <input type="email" placeholder="Enter email" className="form-control" /></div>
-                <div className="form-group"><label>Password</label> <input type="password" placeholder="Password" className="form-control" /></div>
-                <div>
-                    <button className="btn btn-sm btn-primary pull-right m-t-n-xs" type="submit"><strong>Log in</strong></button>
-                    <label> <input type="checkbox" className="i-checks" /> Remember me </label>
-                </div>
+                <div className="form-group"><label>Profile title</label> <input type="text" placeholder="Enter a profile title" className="form-control" /></div>
+                <div className="form-group"><label>Password</label> <input type="password" placeholder="Password" className="form-control" /></div>                
             </form>
 
 
@@ -37,6 +33,11 @@ export class ProfileWizard_BaseInfo_Page extends bw.ProfileWizard_BasePage {
 
     }
 
+
+    get_title() {
+
+        return <span>Basic information</span>
+    }
 
 
 }
