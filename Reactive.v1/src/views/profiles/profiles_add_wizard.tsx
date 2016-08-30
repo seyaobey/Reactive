@@ -31,7 +31,7 @@ export class ProfileAddWizard extends core.base.BaseView {
 
         var html = 
             <pn.BasePanel className="animated fadeInRight" style={{ minHeight: 350 }}>
-                <h2><i className="fa fa-plus-circle"></i> New profile</h2>
+                <h2><i className="fa fa-plus-circle"></i> <span>New profile</span> <a className="text-warning pull-right" style={{ marginRight: 20 }}><i className="fa fa-reply"></i> cancel</a></h2>
 
                 <hr />
 
