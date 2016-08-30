@@ -19,7 +19,8 @@ export class ProfileWizard_BaseInfo_Page extends bw.ProfileWizard_BasePage {
 
     props: bw.ProfileWizardWizardWizard_BasePageProps;
 
-    render() {
+
+    build_content() {
 
         var html = 
             <form role="form">
@@ -35,5 +36,7 @@ export class ProfileWizard_BaseInfo_Page extends bw.ProfileWizard_BasePage {
         return html;
 
     }
+
+
 
 }

@@ -19,6 +19,13 @@ var b: any = rb;
 
 export class ProfileAddWizard extends core.base.BaseView {
 
+    pages: any[];
+
+
+    constructor(props: any) {
+        super(props);
+    }
+
 
     render() {
 
@@ -54,7 +61,7 @@ export class ProfileAddWizard extends core.base.BaseView {
 
                 <h3>Basic info</h3>
                 <section>
-                    <h2>Profile basic information</h2>
+                    <bsi.ProfileWizard_BaseInfo_Page page_index={0} owner={this}  />
                 </section>
                 <h3>Occupations</h3>
                 <section>
@@ -71,6 +78,13 @@ export class ProfileAddWizard extends core.base.BaseView {
             </div>
 
         return html;
+    }
+
+
+
+    add_page(page: any) {
+
+
     }
 
 
